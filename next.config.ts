@@ -14,6 +14,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.aliexpress.com",
       },
+      {
+        protocol: "https",
+        hostname: "down-br.img.susercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.susercontent.com",
+      },
     ],
   },
 };
