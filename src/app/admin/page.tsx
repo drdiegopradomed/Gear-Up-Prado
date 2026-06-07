@@ -4,9 +4,6 @@ import { products, Product, formatPrice } from "@/lib/products";
 import { supabase, ProductOverride } from "@/lib/supabase";
 import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check, Trash2, Plus } from "lucide-react";
 
-type EditState = Omit<Product, "reviews"> & { adminToken: string };
-void (EditState as unknown);
-
 function AdminLogin({ onLogin }: { onLogin: (token: string) => void }) {
   const [pwd, setPwd] = useState("");
   const [err, setErr] = useState("");
@@ -349,7 +346,6 @@ export default function AdminPage() {
         />
       )}
 
-      {/* Header */}
       <div className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
         <div>
           <span className="text-xl font-black"><span className="text-white">Kit</span><span className="text-amber-400">Certo</span></span>
@@ -366,7 +362,6 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* Product grid */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-black text-white mb-2">Produtos</h1>
         <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição.</p>
