@@ -1,29 +1,32 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Shield, Truck, RefreshCw, Zap } from "lucide-react";
+import { ArrowRight, Shield, Truck, RefreshCw, MessageCircle, CheckCircle, Star } from "lucide-react";
 import { products, formatPrice } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
 
 const categories = [
-  { name: "Gadgets & Eletrônicos", slug: "gadgets", icon: "⚡", description: "Smartwatches, fones, power banks e mais" },
-  { name: "Automação Residencial", slug: "automacao", icon: "🏠", description: "Câmeras, fechaduras e tomadas inteligentes" },
-  { name: "Camping & Aventura", slug: "camping", icon: "🏕️", description: "Lanternas, filtros e equipamentos táticos" },
-  { name: "Ferramentas & Utilidades", slug: "ferramentas", icon: "🔧", description: "Multifunções, medidores e organizadores" },
+  { name: "Gadgets & Tecnologia", slug: "gadgets", icon: "⚡", description: "Carregadores, suportes, acessórios para celular e home office" },
+  { name: "Casa & Garagem", slug: "casa", icon: "🏠", description: "Organização, iluminação, segurança e utilidades domésticas" },
+  { name: "Camping & Aventura", slug: "camping", icon: "🏕️", description: "Lanternas, garrafas, organizadores e itens para uso outdoor" },
+  { name: "Ferramentas & Reparos", slug: "ferramentas", icon: "🔧", description: "Itens para manutenção simples, medição e organização" },
 ];
 
 const diferenciais = [
-  { icon: Shield, title: "Compra Protegida", desc: "Garantia de 7 dias ou seu dinheiro de volta" },
-  { icon: Truck, title: "Entrega Rápida", desc: "Envio em até 24h para todo o Brasil" },
-  { icon: RefreshCw, title: "Troca Fácil", desc: "Troca gratuita em caso de defeito de fabricação" },
-  { icon: Zap, title: "Pagamento Seguro", desc: "PIX, cartão e boleto via Mercado Pago" },
+  { icon: Shield, title: "Compra Segura", desc: "Pagamento via PIX, cartão e boleto" },
+  { icon: Star, title: "Curadoria Prática", desc: "Produtos escolhidos para resolver problemas reais" },
+  { icon: Truck, title: "Envio para todo o Brasil", desc: "Prazo informado em cada produto" },
+  { icon: RefreshCw, title: "7 Dias de Garantia", desc: "Devolução conforme política da loja" },
+  { icon: MessageCircle, title: "Atendimento Humano", desc: "Suporte pelo WhatsApp em horário comercial" },
+  { icon: CheckCircle, title: "Pedido Processado em 24h", desc: "Prazo de entrega informado no checkout" },
 ];
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 4);
-  const heroProduct = products[0];
+  const heroProduct = products.find(p => p.slug === "power-bank-65w") ?? products[0];
 
   return (
     <>
+      {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 40px, #f59e0b 40px, #f59e0b 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, #f59e0b 40px, #f59e0b 41px)" }} />
@@ -32,20 +35,20 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
-                O kit certo para cada momento
+                Utilidades inteligentes para homens práticos
               </span>
               <h1 className="text-4xl lg:text-6xl font-black text-white leading-tight mb-6">
-                Gadgets e<br />ferramentas que<br /><span className="text-amber-500">fazem diferença</span>
+                O kit certo para<br />quem gosta de<br /><span className="text-amber-500">estar preparado</span>
               </h1>
               <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-lg">
-                Equipamentos úteis para casa, carro, rotina e aventura. Soluções práticas para homens que gostam de estar preparados.
+                Gadgets, ferramentas e utilidades para casa, carro, trabalho e aventura — escolhidos para facilitar sua rotina com praticidade.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/produtos" className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-6 py-3.5 rounded-lg transition-colors">
-                  Ver Todos os Produtos <ArrowRight size={18} />
+                  Montar meu kit agora <ArrowRight size={18} />
                 </Link>
                 <Link href={`/produtos/${heroProduct.slug}`} className="inline-flex items-center gap-2 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-400 font-semibold px-6 py-3.5 rounded-lg transition-colors">
-                  Produto em Destaque
+                  Ver produto em destaque
                 </Link>
               </div>
             </div>
@@ -54,7 +57,7 @@ export default function HomePage() {
                 <Image src={heroProduct.imageUrl} alt={heroProduct.name} fill className="object-cover" priority />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
-                  <span className="bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-1 rounded-full">{heroProduct.badge}</span>
+                  {heroProduct.badge && <span className="bg-amber-500 text-slate-900 text-xs font-bold px-2.5 py-1 rounded-full">{heroProduct.badge}</span>}
                   <h3 className="text-white font-bold text-lg mt-2">{heroProduct.name}</h3>
                   <p className="text-amber-400 font-black text-2xl">{formatPrice(heroProduct.price)}</p>
                 </div>
@@ -64,9 +67,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Diferenciais */}
       <section className="border-y border-slate-800 bg-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <h2 className="text-center text-white font-black text-lg mb-8">Por que comprar na KitCerto?</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
             {diferenciais.map((d) => (
               <div key={d.title} className="flex items-start gap-3">
                 <div className="bg-amber-500/10 rounded-lg p-2 flex-shrink-0"><d.icon size={20} className="text-amber-500" /></div>
@@ -77,6 +82,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Categorias */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h2 className="text-2xl font-black text-white mb-8">Categorias</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -90,6 +96,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Produtos em destaque */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-black text-white">Produtos em Destaque</h2>
@@ -100,12 +107,13 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* CTA Final */}
       <section className="bg-amber-500 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-black text-slate-900 mb-3">Pronto para ter o kit certo?</h2>
-          <p className="text-slate-800 mb-6 max-w-xl mx-auto">Explore nossa coleção completa de gadgets, ferramentas e equipamentos para o dia a dia.</p>
+          <h2 className="text-3xl font-black text-slate-900 mb-3">Pronto para montar o seu kit?</h2>
+          <p className="text-slate-800 mb-6 max-w-xl mx-auto">Explore nossa curadoria de gadgets, ferramentas e utilidades práticas para o dia a dia.</p>
           <Link href="/produtos" className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 py-3.5 rounded-lg transition-colors">
-            Explorar Produtos <ArrowRight size={18} />
+            Montar meu kit agora <ArrowRight size={18} />
           </Link>
         </div>
       </section>
