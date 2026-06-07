@@ -18,6 +18,7 @@ export async function getProductsWithOverrides(): Promise<Product[]> {
         ...(o.description != null && { description: o.description }),
         ...(o.features != null && { features: o.features }),
         ...(o.image_url != null && { imageUrl: o.image_url }),
+        ...(o.images != null && { images: o.images }),
         ...(o.badge != null && { badge: o.badge }),
         ...(o.in_stock != null && { inStock: o.in_stock }),
         ...(o.delivery_days != null && { deliveryDays: o.delivery_days }),

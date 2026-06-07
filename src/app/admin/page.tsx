@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import { products, Product, formatPrice } from "@/lib/products";
 import { supabase, ProductOverride } from "@/lib/supabase";
-import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check } from "lucide-react";
+import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check, Trash2, Plus } from "lucide-react";
 
-type EditState = Omit<Product, "reviews" | "images"> & { adminToken: string };
+type EditState = Omit<Product, "reviews"> & { adminToken: string };
+void (EditState as unknown);
 
 function AdminLogin({ onLogin }: { onLogin: (token: string) => void }) {
   const [pwd, setPwd] = useState("");
@@ -77,23 +78,34 @@ function EditModal({
   const [badge, setBadge] = useState(product.badge ?? "");
   const [deliveryDays, setDeliveryDays] = useState(product.deliveryDays);
   const [imageUrl, setImageUrl] = useState(product.imageUrl);
+  const [extraImages, setExtraImages] = useState<string[]>(product.images ?? []);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const extraFileRef = useRef<HTMLInputElement>(null);
 
-  async function uploadImage(file: File) {
+  async function uploadFiles(files: FileList, target: "main" | "extra") {
     setUploading(true);
     const fd = new FormData();
-    fd.append("file", file);
     fd.append("adminToken", adminToken);
+    Array.from(files).forEach((f) => fd.append("file", f));
+    setUploadProgress(`Enviando ${files.length} foto${files.length > 1 ? "s" : ""}...`);
     const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
     setUploading(false);
-    if (res.ok) {
-      const { url } = await res.json();
-      setImageUrl(url);
+    setUploadProgress("");
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert("Erro no upload: " + (data.error ?? res.status));
+      return;
+    }
+    const { urls } = await res.json();
+    if (target === "main") {
+      setImageUrl(urls[0]);
+      if (urls.length > 1) setExtraImages((prev) => [...prev, ...urls.slice(1)]);
     } else {
-      alert("Erro no upload");
+      setExtraImages((prev) => [...prev, ...urls]);
     }
   }
 
@@ -110,6 +122,7 @@ function EditModal({
         description,
         features: featuresText.split("\n").map((s) => s.trim()).filter(Boolean),
         imageUrl,
+        images: extraImages.length > 0 ? extraImages : null,
         badge: badge || null,
         deliveryDays,
         inStock: true,
@@ -139,10 +152,10 @@ function EditModal({
           <button onClick={onClose} className="text-slate-400 hover:text-white"><X size={20} /></button>
         </div>
 
-        <div className="p-5 space-y-4">
-          {/* Image */}
+        <div className="p-5 space-y-5">
+          {/* Foto principal */}
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Foto do produto</label>
+            <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Foto principal</label>
             <div
               className="relative h-48 rounded-xl overflow-hidden border-2 border-dashed border-slate-600 cursor-pointer hover:border-amber-500 transition-colors group"
               onClick={() => fileRef.current?.click()}
@@ -157,7 +170,9 @@ function EditModal({
                 </div>
               )}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <span className="text-white text-sm font-semibold flex items-center gap-2"><Upload size={16} /> {uploading ? "Enviando..." : "Trocar foto"}</span>
+                <span className="text-white text-sm font-semibold flex items-center gap-2">
+                  <Upload size={16} /> {uploading ? uploadProgress : "Trocar foto"}
+                </span>
               </div>
             </div>
             <input
@@ -165,7 +180,7 @@ function EditModal({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])}
+              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "main")}
             />
             <input
               type="url"
@@ -174,6 +189,42 @@ function EditModal({
               onChange={(e) => setImageUrl(e.target.value)}
               className="mt-2 w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
             />
+          </div>
+
+          {/* Fotos adicionais */}
+          <div>
+            <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Fotos adicionais</label>
+            <div className="grid grid-cols-3 gap-2 mb-2">
+              {extraImages.map((url, i) => (
+                <div key={i} className="relative h-24 rounded-lg overflow-hidden border border-slate-600 group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setExtraImages((prev) => prev.filter((_, idx) => idx !== i))}
+                    className="absolute top-1 right-1 bg-black/70 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 size={12} className="text-red-400" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={() => extraFileRef.current?.click()}
+                disabled={uploading}
+                className="h-24 rounded-lg border-2 border-dashed border-slate-600 hover:border-amber-500 flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-amber-400 transition-colors disabled:opacity-50"
+              >
+                <Plus size={20} />
+                <span className="text-xs">{uploading ? uploadProgress : "Adicionar"}</span>
+              </button>
+            </div>
+            <input
+              ref={extraFileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "extra")}
+            />
+            <p className="text-xs text-slate-500">Selecione várias fotos de uma vez na fototeca</p>
           </div>
 
           {/* Name */}
@@ -278,6 +329,7 @@ export default function AdminPage() {
       ...(o.description != null && { description: o.description }),
       ...(o.features != null && { features: o.features }),
       ...(o.image_url != null && { imageUrl: o.image_url }),
+      ...(o.images != null && { images: o.images }),
       ...(o.badge != null && { badge: o.badge }),
       ...(o.delivery_days != null && { deliveryDays: o.delivery_days }),
     };
@@ -317,7 +369,7 @@ export default function AdminPage() {
       {/* Product grid */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         <h1 className="text-2xl font-black text-white mb-2">Produtos</h1>
-        <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar foto, nome, preço ou descrição de qualquer produto.</p>
+        <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição.</p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {products.map((p) => {
@@ -325,7 +377,6 @@ export default function AdminPage() {
             const hasOverride = overrides.has(p.id);
             return (
               <div key={p.id} className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-                {/* Thumbnail */}
                 <div className="relative h-40 bg-slate-700">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" />
@@ -333,7 +384,6 @@ export default function AdminPage() {
                     <span className="absolute top-2 right-2 bg-amber-500 text-slate-900 text-xs font-bold px-2 py-0.5 rounded-full">Editado</span>
                   )}
                 </div>
-                {/* Info */}
                 <div className="p-3">
                   <p className="text-xs text-slate-500 mb-0.5">{prod.category}</p>
                   <p className="text-sm font-semibold text-white leading-tight mb-1 line-clamp-2">{prod.name}</p>
