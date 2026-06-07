@@ -187,15 +187,27 @@ function EditModal({
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Fotos adicionais</label>
             <div className="grid grid-cols-3 gap-2 mb-2">
               {extraImages.map((url, i) => (
-                <div key={i} className="relative h-24 rounded-lg overflow-hidden border border-slate-600 group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="w-full h-full object-cover" />
-                  <button
-                    onClick={() => setExtraImages((prev) => prev.filter((_, idx) => idx !== i))}
-                    className="absolute top-1 right-1 bg-black/70 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={12} className="text-red-400" />
-                  </button>
+                <div key={i} className="relative group">
+                  <div className="relative h-24 rounded-lg overflow-hidden border border-slate-600">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute top-0 right-0 left-0 bottom-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => { setImageUrl(url); }}
+                      title="Usar como capa"
+                      className="bg-amber-500 text-slate-900 rounded-full p-1 shadow"
+                    >
+                      <Check size={12} />
+                    </button>
+                    <button
+                      onClick={() => setExtraImages((prev) => prev.filter((_, idx) => idx !== i))}
+                      title="Remover"
+                      className="bg-black/70 rounded-full p-1"
+                    >
+                      <Trash2 size={12} className="text-red-400" />
+                    </button>
+                  </div>
                 </div>
               ))}
               <button
@@ -209,7 +221,7 @@ function EditModal({
             </div>
             <input ref={extraFileRef} type="file" accept="image/*" multiple className="hidden"
               onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "extra")} />
-            <p className="text-xs text-slate-500">Selecione várias fotos de uma vez na fototeca</p>
+            <p className="text-xs text-slate-500">Passe o mouse sobre uma foto adicional e clique <strong className="text-amber-400">✓</strong> para usá-la como capa</p>
           </div>
 
           <div>
@@ -323,7 +335,7 @@ export default function AdminPage() {
     <div className="min-h-screen bg-slate-900">
       {editing && token && (
         <EditModal
-          product={getProduct(editing)}
+          product={editing}
           adminToken={token}
           onClose={() => setEditing(null)}
           onSaved={() => { loadOverrides(); setEditing(null); }}
@@ -368,7 +380,7 @@ export default function AdminPage() {
                   <p className="text-sm font-semibold text-white leading-tight mb-1 line-clamp-2">{prod.name}</p>
                   <p className="text-amber-400 font-bold text-sm mb-3">{formatPrice(prod.price)}</p>
                   <button
-                    onClick={() => setEditing(p)}
+                    onClick={() => setEditing(getProduct(p))}
                     className="w-full flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-amber-500 hover:text-slate-900 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors"
                   >
                     <Edit2 size={13} /> Editar
