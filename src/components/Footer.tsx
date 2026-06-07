@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap, Mail, Instagram, ShieldCheck, Lock, RotateCcw, CreditCard } from "lucide-react";
+import { Mail, Instagram, ShieldCheck, Lock, RotateCcw, CreditCard, PackageCheck } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -44,19 +44,19 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <div className="bg-amber-500 rounded p-1.5">
-                <Zap size={16} className="text-slate-900" strokeWidth={2.5} />
+              <div className="bg-amber-500 rounded-lg p-1.5">
+                <PackageCheck size={16} className="text-slate-900" strokeWidth={2.5} />
               </div>
-              <span className="font-black text-white">GEAR UP PRADO</span>
+              <span className="font-black text-white text-lg">Kit<span className="text-amber-500">Certo</span></span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-4">
               Gadgets, ferramentas e utilidades para simplificar o dia a dia do homem moderno.
             </p>
             <div className="flex gap-3">
-              <a href="https://instagram.com/gearupprado" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-amber-500 transition-colors" aria-label="Instagram">
+              <a href="https://instagram.com/kitcerto" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-amber-500 transition-colors" aria-label="Instagram">
                 <Instagram size={20} />
               </a>
-              <a href="mailto:contato@gearupprado.com.br" className="text-slate-500 hover:text-amber-500 transition-colors" aria-label="Email">
+              <a href="mailto:contato@kitcerto.com.br" className="text-slate-500 hover:text-amber-500 transition-colors" aria-label="Email">
                 <Mail size={20} />
               </a>
             </div>
@@ -99,8 +99,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-slate-400">
               <li>Segunda a Sexta, 9h–18h</li>
               <li>
-                <a href="mailto:contato@gearupprado.com.br" className="hover:text-white transition-colors">
-                  contato@gearupprado.com.br
+                <a href="mailto:contato@kitcerto.com.br" className="hover:text-white transition-colors">
+                  contato@kitcerto.com.br
                 </a>
               </li>
               <li className="pt-1">
@@ -113,7 +113,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-slate-800 text-xs text-slate-600 flex flex-col sm:flex-row justify-between gap-2">
-          <p>© {new Date().getFullYear()} Gear Up Prado. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} KitCerto. Todos os direitos reservados.</p>
           <div className="flex gap-4">
             <p>CNPJ: a confirmar</p>
             <p>Vitória/ES — Brasil</p>
