@@ -130,7 +130,8 @@ function EditModal({
       setSaved(true);
       setTimeout(() => { onSaved(); onClose(); }, 800);
     } else {
-      alert("Erro ao salvar");
+      const data = await res.json().catch(() => ({}));
+      alert("Erro ao salvar: " + (data.error ?? res.status) + (data.details ? "\n" + JSON.stringify(data.details) : ""));
     }
   }
 
