@@ -26,26 +26,21 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     updated_at: new Date().toISOString(),
   };
 
-  console.log("[admin PUT] id=", id, "SUPABASE_URL=", SUPABASE_URL);
-  console.log("[admin PUT] payload=", JSON.stringify(payload).slice(0, 300));
-
-  // Step 1: delete existing row
-  const delUrl = `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`;
-  console.log("[admin PUT] DELETE", delUrl);
-  const delRes = await fetch(delUrl, {
-    method: "DELETE",
-    headers: {
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-    },
-  });
-  const delBody = await delRes.text();
-  console.log("[admin PUT] DELETE status=", delRes.status, "body=", delBody);
+  const delRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    }
+  );
   if (!delRes.ok) {
-    return NextResponse.json({ error: `DELETE failed: ${delBody}` }, { status: 500 });
+    const text = await delRes.text();
+    return NextResponse.json({ error: `DELETE failed: ${text}` }, { status: 500 });
   }
 
-  // Step 2: insert fresh row
   const insRes = await fetch(`${SUPABASE_URL}/rest/v1/product_overrides`, {
     method: "POST",
     headers: {
@@ -56,10 +51,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     },
     body: JSON.stringify(payload),
   });
-  const insBody = await insRes.text();
-  console.log("[admin PUT] INSERT status=", insRes.status, "body=", insBody);
   if (!insRes.ok) {
-    return NextResponse.json({ error: `INSERT failed: ${insBody}` }, { status: 500 });
+    const text = await insRes.text();
+    return NextResponse.json({ error: `INSERT failed: ${text}` }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });
