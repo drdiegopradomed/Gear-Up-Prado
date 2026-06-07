@@ -25,24 +25,49 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     delivery_days: body.deliveryDays,
   };
 
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/product_overrides`,
+  // First try PATCH to update existing row
+  const patchRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         "Content-Type": "application/json",
-        Prefer: "resolution=merge-duplicates,return=minimal",
+        Prefer: "return=representation",
       },
       body: JSON.stringify(payload),
     }
   );
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Supabase upsert error:", res.status, text);
+  if (!patchRes.ok) {
+    const text = await patchRes.text();
+    console.error("PATCH error:", patchRes.status, text);
     return NextResponse.json({ error: text }, { status: 500 });
+  }
+
+  const patchData = await patchRes.json().catch(() => []);
+
+  // If no row was updated (empty array), insert new row
+  if (!Array.isArray(patchData) || patchData.length === 0) {
+    const postRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/product_overrides`,
+      {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    if (!postRes.ok) {
+      const text = await postRes.text();
+      console.error("POST error:", postRes.status, text);
+      return NextResponse.json({ error: text }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ ok: true });
@@ -58,7 +83,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   }
 
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${id}`,
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
     {
       method: "DELETE",
       headers: {
