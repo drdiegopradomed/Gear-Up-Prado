@@ -33,8 +33,6 @@ export function getProductBySlug(slug: string) {
   return products.find((p) => p.slug === slug);
 }
 
-const IMGS = "https://raw.githubusercontent.com/drdiegopradomed/Gear-Up-Prado/main/public/images";
-
 export const products: Product[] = [
   {
     id: "1",
@@ -227,13 +225,13 @@ export const products: Product[] = [
       "Compatível com 100+ dispositivos",
       "Certificado ANATEL — 96×72×32mm, 323g",
     ],
-    imageUrl: `${IMGS}/power-bank-basike-7.jpg`,
+    imageUrl: "/images/power-bank-basike-7.jpg",
     images: [
-      `${IMGS}/power-bank-basike.jpg`,
-      `${IMGS}/power-bank-basike-2.jpg`,
-      `${IMGS}/power-bank-basike-4.jpg`,
-      `${IMGS}/power-bank-basike-5.jpg`,
-      `${IMGS}/power-bank-basike-6.jpg`,
+      "/images/power-bank-basike.jpg",
+      "/images/power-bank-basike-2.jpg",
+      "/images/power-bank-basike-4.jpg",
+      "/images/power-bank-basike-5.jpg",
+      "/images/power-bank-basike-6.jpg",
     ],
     badge: "ANATEL",
     inStock: true,
@@ -372,7 +370,7 @@ export const products: Product[] = [
     features: [
       "115 bits de precisão em aço S2",
       "Inclui pentalobe, torx, tri-wing e mais",
-      "Cabo magnético com suporte giratório",
+      "Cabo magnético com suporte girátório",
       "Estojo organizador com encaixe individual",
       "Pinça e alavanca de abertura inclusas",
       "Compatível com iPhone, Samsung e mais",
@@ -526,7 +524,7 @@ export const products: Product[] = [
     reviews: [
       { author: "Alexsandro R.", rating: 5, comment: "Leve e potente. Usei em espeleologia e foi perfeita.", date: "12/05/2026" },
       { author: "Silvio N.", rating: 5, comment: "Luz vermelha é ótima para não perder a visão noturna.", date: "26/04/2026" },
-      { author: "Adão C.", rating: 4, comment: "Muito boa. A regulagem do ângulo é precisa.", date: "09/04/2026" },
+      { author: "Adão C.", rating: 4, comment: "Muito boa. A regulação do ângulo é precisa.", date: "09/04/2026" },
     ],
   },
   {
