@@ -89,7 +89,8 @@ function EditModal({
     fd.append("adminToken", adminToken);
     Array.from(files).forEach((f) => fd.append("file", f));
     setUploadProgress(`Enviando ${files.length} foto${files.length > 1 ? "s" : ""}...`);
-    const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+    const res = await fetch("<https://pftxshuumirphkosihfn.supabase.co/functions/v1/upload-image>
+", { method: "POST", body: fd });
     setUploading(false);
     setUploadProgress("");
     if (!res.ok) {
