@@ -18,14 +18,28 @@ export async function POST(req: NextRequest) {
 
   const urls: string[] = [];
   for (const file of files) {
-    const ext = file.name.split(".").pop() ?? "jpg";
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const bytes = await file.arrayBuffer();
-    const { error } = await supabase.storage
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Try upload; if duplicate, append suffix and retry
+    let uploadPath = fileName;
+    let result = await supabase.storage
       .from("product-images")
-      .upload(fileName, bytes, { contentType: file.type, upsert: true });
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(fileName);
+      .upload(uploadPath, buffer, { contentType: file.type });
+
+    if (result.error?.message?.includes("already exists")) {
+      uploadPath = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      result = await supabase.storage
+        .from("product-images")
+        .upload(uploadPath, buffer, { contentType: file.type });
+    }
+
+    if (result.error) {
+      return NextResponse.json({ error: result.error.message }, { status: 500 });
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(uploadPath);
     urls.push(publicUrl);
   }
 
