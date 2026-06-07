@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, Check, ShieldCheck, Truck, ArrowLeft, Star, RotateCcw, Lock } from "lucide-react";
 import { products, formatPrice } from "@/lib/products";
 import { getProductWithOverride } from "@/lib/products-with-overrides";
 import AddToCartButton from "./AddToCartButton";
+import ImageGallery from "./ImageGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -52,10 +52,12 @@ export default async function ProductPage({ params }: Props) {
       </nav>
 
       <div className="grid lg:grid-cols-2 gap-12">
-        <div className="relative h-80 lg:h-[500px] rounded-2xl overflow-hidden border border-slate-700">
-          <Image src={product.imageUrl} alt={product.name} fill className="object-cover" priority />
-          {product.badge && <span className="absolute top-4 left-4 bg-amber-500 text-slate-900 text-sm font-bold px-3 py-1.5 rounded-full">{product.badge}</span>}
-        </div>
+        <ImageGallery
+          mainImage={product.imageUrl}
+          images={product.images}
+          alt={product.name}
+          badge={product.badge}
+        />
 
         <div>
           <p className="text-amber-500 text-sm font-medium mb-2">{product.category}</p>
@@ -112,7 +114,6 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Reviews */}
       {product.reviews && product.reviews.length > 0 && (
         <div className="mt-14">
           <h2 className="text-xl font-black text-white mb-6 flex items-center gap-2">
