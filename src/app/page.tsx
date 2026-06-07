@@ -2,7 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Shield, Truck, RefreshCw, MessageCircle, CheckCircle, Star } from "lucide-react";
 import { products, formatPrice } from "@/lib/products";
+import { getProductsWithOverrides } from "@/lib/products-with-overrides";
 import ProductCard from "@/components/ProductCard";
+
+export const dynamic = "force-dynamic";
 
 const categories = [
   { name: "Gadgets & Tecnologia", slug: "gadgets", icon: "⚡", description: "Carregadores, suportes, acessórios para celular e home office" },
@@ -20,9 +23,10 @@ const diferenciais = [
   { icon: CheckCircle, title: "Pedido Processado em 24h", desc: "Prazo de entrega informado no checkout" },
 ];
 
-export default function HomePage() {
-  const featuredProducts = products.slice(0, 4);
-  const heroProduct = products.find(p => p.slug === "power-bank-65w") ?? products[0];
+export default async function HomePage() {
+  const allProducts = await getProductsWithOverrides();
+  const featuredProducts = allProducts.slice(0, 4);
+  const heroProduct = allProducts.find(p => p.slug === "power-bank-65w") ?? allProducts[0];
 
   return (
     <>
