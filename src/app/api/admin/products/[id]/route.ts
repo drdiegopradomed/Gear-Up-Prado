@@ -23,51 +23,42 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     badge: body.badge,
     in_stock: body.inStock,
     delivery_days: body.deliveryDays,
+    updated_at: new Date().toISOString(),
   };
 
-  // First try PATCH to update existing row
-  const patchRes = await fetch(
+  // Step 1: delete existing row (safe even if none exists)
+  const delRes = await fetch(
     `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
     {
-      method: "PATCH",
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    }
+  );
+  if (!delRes.ok) {
+    const text = await delRes.text();
+    return NextResponse.json({ error: `DELETE failed: ${text}` }, { status: 500 });
+  }
+
+  // Step 2: insert fresh row
+  const insRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides`,
+    {
+      method: "POST",
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         "Content-Type": "application/json",
-        Prefer: "return=representation",
+        Prefer: "return=minimal",
       },
       body: JSON.stringify(payload),
     }
   );
-
-  if (!patchRes.ok) {
-    const text = await patchRes.text();
-    console.error("PATCH error:", patchRes.status, text);
-    return NextResponse.json({ error: text }, { status: 500 });
-  }
-
-  const patchData = await patchRes.json().catch(() => []);
-
-  // If no row was updated (empty array), insert new row
-  if (!Array.isArray(patchData) || patchData.length === 0) {
-    const postRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/product_overrides`,
-      {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-          "Content-Type": "application/json",
-          Prefer: "return=minimal",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-    if (!postRes.ok) {
-      const text = await postRes.text();
-      console.error("POST error:", postRes.status, text);
-      return NextResponse.json({ error: text }, { status: 500 });
-    }
+  if (!insRes.ok) {
+    const text = await insRes.text();
+    return NextResponse.json({ error: `INSERT failed: ${text}` }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true });
