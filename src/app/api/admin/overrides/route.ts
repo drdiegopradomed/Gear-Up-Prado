@@ -1,15 +1,30 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://pftxshuumirphkosihfn.supabase.co";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdHhzaHV1bWlycGhrb3NpaGZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDA1MzksImV4cCI6MjA5NTExNjUzOX0.wqeLt49mZnxzpiEzOlG01Br4p7HbSxyUkyf7yGhkbl4";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data, error } = await supabase.from("product_overrides").select("*");
-  if (error) {
-    console.error("overrides fetch error:", error);
-    return NextResponse.json({ data: [], error: error.message });
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/product_overrides?select=*`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Cache-Control": "no-store",
+        },
+        cache: "no-store",
+      }
+    );
+    if (!res.ok) {
+      const text = await res.text();
+      return NextResponse.json({ data: [], error: text });
+    }
+    const data = await res.json();
+    return NextResponse.json({ data });
+  } catch (e) {
+    return NextResponse.json({ data: [], error: String(e) });
   }
-  return NextResponse.json({ data: data ?? [] });
 }

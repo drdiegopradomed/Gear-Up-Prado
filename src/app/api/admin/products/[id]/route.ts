@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://pftxshuumirphkosihfn.supabase.co";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdHhzaHV1bWlycGhrb3NpaGZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NDA1MzksImV4cCI6MjA5NTExNjUzOX0.wqeLt49mZnxzpiEzOlG01Br4p7HbSxyUkyf7yGhkbl4";
-
-function getSupabase() {
-  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,7 +10,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (body.adminToken !== adminPwd) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const supabase = getSupabase();
+
   const payload = {
     product_id: id,
     name: body.name,
@@ -29,11 +24,27 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     in_stock: body.inStock,
     delivery_days: body.deliveryDays,
   };
-  const { error } = await supabase.from("product_overrides").upsert(payload, { onConflict: "product_id" });
-  if (error) {
-    console.error("Supabase upsert error:", JSON.stringify(error));
-    return NextResponse.json({ error: error.message, details: error }, { status: 500 });
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides`,
+    {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Supabase upsert error:", res.status, text);
+    return NextResponse.json({ error: text }, { status: 500 });
   }
+
   return NextResponse.json({ ok: true });
 }
 
@@ -45,7 +56,22 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   if (adminToken !== adminPwd) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const supabase = getSupabase();
-  await supabase.from("product_overrides").delete().eq("product_id", id);
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    return NextResponse.json({ error: text }, { status: 500 });
+  }
+
   return NextResponse.json({ ok: true });
 }
