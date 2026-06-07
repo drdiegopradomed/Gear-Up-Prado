@@ -2,7 +2,7 @@ import { RotateCcw, ShieldCheck, Truck, Clock } from "lucide-react";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Política de Devolução — Gear Up Prado",
+  title: "Política de Devolução — KitCerto",
   description: "Saiba como funciona nossa política de trocas, devoluções e garantia de 7 dias.",
 };
 
@@ -52,7 +52,7 @@ export default function PoliticaDevolucaoPage() {
           <ol className="space-y-3 text-slate-400">
             <li className="flex gap-3">
               <span className="bg-amber-500 text-slate-900 font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm">1</span>
-              <span>Entre em contato pelo e-mail <a href="mailto:contato@gearupprado.com.br" className="text-amber-400 hover:underline">contato@gearupprado.com.br</a> ou WhatsApp informando o número do pedido e o motivo da devolução.</span>
+              <span>Entre em contato pelo e-mail <a href="mailto:contato@kitcerto.com.br" className="text-amber-400 hover:underline">contato@kitcerto.com.br</a> ou WhatsApp informando o número do pedido e o motivo da devolução.</span>
             </li>
             <li className="flex gap-3">
               <span className="bg-amber-500 text-slate-900 font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm">2</span>
@@ -99,7 +99,7 @@ export default function PoliticaDevolucaoPage() {
             Entre em contato com nosso time de atendimento. Estamos disponíveis de segunda a sexta, das 9h às 18h.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
-            <a href="mailto:contato@gearupprado.com.br" className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-lg transition-colors text-sm">
+            <a href="mailto:contato@kitcerto.com.br" className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-5 py-2.5 rounded-lg transition-colors text-sm">
               Enviar e-mail
             </a>
             <Link href="/produtos" className="inline-flex items-center gap-2 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-400 font-semibold px-5 py-2.5 rounded-lg transition-colors text-sm">
