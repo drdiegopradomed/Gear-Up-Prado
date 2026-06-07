@@ -3,8 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, Check, ShieldCheck, Truck, ArrowLeft, Star, RotateCcw, Lock } from "lucide-react";
-import { getProductBySlug, formatPrice, products } from "@/lib/products";
+import { products, formatPrice } from "@/lib/products";
+import { getProductWithOverride } from "@/lib/products-with-overrides";
 import AddToCartButton from "./AddToCartButton";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -14,7 +17,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductWithOverride(slug);
   if (!product) return {};
   return { title: product.name, description: product.description };
 }
@@ -33,7 +36,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductWithOverride(slug);
   if (!product) notFound();
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
