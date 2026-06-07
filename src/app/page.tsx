@@ -32,7 +32,7 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 tracking-wider uppercase">
-                Homem prático, sempre equipado
+                O kit certo para cada momento
               </span>
               <h1 className="text-4xl lg:text-6xl font-black text-white leading-tight mb-6">
                 Gadgets e<br />ferramentas que<br /><span className="text-amber-500">fazem diferença</span>
@@ -102,8 +102,8 @@ export default function HomePage() {
 
       <section className="bg-amber-500 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-black text-slate-900 mb-3">Pronto para estar mais equipado?</h2>
-          <p className="text-slate-800 mb-6 max-w-xl mx-auto">Explore nossa coleção completa de gadgets, ferramentas e equipamentos táticos.</p>
+          <h2 className="text-3xl font-black text-slate-900 mb-3">Pronto para ter o kit certo?</h2>
+          <p className="text-slate-800 mb-6 max-w-xl mx-auto">Explore nossa coleção completa de gadgets, ferramentas e equipamentos para o dia a dia.</p>
           <Link href="/produtos" className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 py-3.5 rounded-lg transition-colors">
             Explorar Produtos <ArrowRight size={18} />
           </Link>
