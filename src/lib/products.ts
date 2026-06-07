@@ -16,6 +16,7 @@ export type Product = {
   description: string;
   features: string[];
   imageUrl: string;
+  images?: string[];
   badge?: string;
   inStock: boolean;
   rating: number;
@@ -224,7 +225,14 @@ export const products: Product[] = [
       "Compatível com 100+ dispositivos",
       "Certificado ANATEL — 96×72×32mm, 323g",
     ],
-    imageUrl: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80",
+    imageUrl: "/images/power-bank-basike-7.jpg",
+    images: [
+      "/images/power-bank-basike.jpg",
+      "/images/power-bank-basike-2.jpg",
+      "/images/power-bank-basike-4.jpg",
+      "/images/power-bank-basike-5.jpg",
+      "/images/power-bank-basike-6.jpg",
+    ],
     badge: "ANATEL",
     inStock: true,
     rating: 4.8,
