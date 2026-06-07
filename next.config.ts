@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "https",
@@ -12,11 +13,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**.aliexpress.com",
+        hostname: "raw.githubusercontent.com",
       },
       {
         protocol: "https",
-        hostname: "down-br.img.susercontent.com",
+        hostname: "**.aliexpress.com",
       },
       {
         protocol: "https",

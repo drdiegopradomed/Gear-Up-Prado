@@ -33,6 +33,8 @@ export function getProductBySlug(slug: string) {
   return products.find((p) => p.slug === slug);
 }
 
+const IMGS = "https://raw.githubusercontent.com/drdiegopradomed/Gear-Up-Prado/main/public/images";
+
 export const products: Product[] = [
   {
     id: "1",
@@ -225,13 +227,13 @@ export const products: Product[] = [
       "Compatível com 100+ dispositivos",
       "Certificado ANATEL — 96×72×32mm, 323g",
     ],
-    imageUrl: "/images/power-bank-basike-7.jpg",
+    imageUrl: `${IMGS}/power-bank-basike-7.jpg`,
     images: [
-      "/images/power-bank-basike.jpg",
-      "/images/power-bank-basike-2.jpg",
-      "/images/power-bank-basike-4.jpg",
-      "/images/power-bank-basike-5.jpg",
-      "/images/power-bank-basike-6.jpg",
+      `${IMGS}/power-bank-basike.jpg`,
+      `${IMGS}/power-bank-basike-2.jpg`,
+      `${IMGS}/power-bank-basike-4.jpg`,
+      `${IMGS}/power-bank-basike-5.jpg`,
+      `${IMGS}/power-bank-basike-6.jpg`,
     ],
     badge: "ANATEL",
     inStock: true,
