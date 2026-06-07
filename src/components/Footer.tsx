@@ -50,7 +50,7 @@ export default function Footer() {
               <span className="font-black text-white text-lg">Kit<span className="text-amber-500">Certo</span></span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-4">
-              Gadgets, ferramentas e utilidades para simplificar o dia a dia do homem moderno.
+              Utilidades inteligentes para homens práticos. Gadgets e ferramentas para casa, carro, trabalho e aventura.
             </p>
             <div className="flex gap-3">
               <a href="https://instagram.com/kitcerto" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-amber-500 transition-colors" aria-label="Instagram">
@@ -67,10 +67,10 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 { href: "/produtos", label: "Todos os Produtos" },
-                { href: "/produtos?cat=gadgets", label: "Gadgets & Eletrônicos" },
+                { href: "/produtos?cat=gadgets", label: "Gadgets & Tecnologia" },
                 { href: "/produtos?cat=camping", label: "Camping & Aventura" },
-                { href: "/produtos?cat=automacao", label: "Automação Residencial" },
-                { href: "/produtos?cat=ferramentas", label: "Ferramentas" },
+                { href: "/produtos?cat=casa", label: "Casa & Garagem" },
+                { href: "/produtos?cat=ferramentas", label: "Ferramentas & Reparos" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="text-slate-400 hover:text-white transition-colors">{l.label}</Link>
@@ -114,10 +114,7 @@ export default function Footer() {
 
         <div className="mt-10 pt-6 border-t border-slate-800 text-xs text-slate-600 flex flex-col sm:flex-row justify-between gap-2">
           <p>© {new Date().getFullYear()} KitCerto. Todos os direitos reservados.</p>
-          <div className="flex gap-4">
-            <p>CNPJ: a confirmar</p>
-            <p>Vitória/ES — Brasil</p>
-          </div>
+          <p>Vitória/ES — Brasil</p>
         </div>
       </div>
     </footer>
