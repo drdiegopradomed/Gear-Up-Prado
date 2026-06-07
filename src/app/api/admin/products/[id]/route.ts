@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const supabase = getSupabase();
-  const { error } = await supabase.from("product_overrides").upsert({
+  const payload = {
     product_id: id,
     name: body.name,
     price: body.price,
@@ -28,8 +28,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     badge: body.badge,
     in_stock: body.inStock,
     delivery_days: body.deliveryDays,
-  }, { onConflict: "product_id" });
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  };
+  const { error } = await supabase.from("product_overrides").upsert(payload, { onConflict: "product_id" });
+  if (error) {
+    console.error("Supabase upsert error:", JSON.stringify(error));
+    return NextResponse.json({ error: error.message, details: error }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
 
