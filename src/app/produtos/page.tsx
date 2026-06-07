@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { products } from "@/lib/products";
+import { getProductsWithOverrides } from "@/lib/products-with-overrides";
 import ProductCard from "@/components/ProductCard";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "Produtos", description: "Explore nossa curadoria de gadgets, ferramentas e utilidades práticas." };
 
@@ -18,14 +20,11 @@ const categoryLabels: Record<string, string> = {
   ferramentas: "Ferramentas & Reparos",
 };
 
-export default function ProdutosPage({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
-  return <ProdutosContent searchParams={searchParams} />;
-}
-
-async function ProdutosContent({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
+export default async function ProdutosPage({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
   const { cat } = await searchParams;
   const categoryFilter = cat ? categoryMap[cat] : null;
-  const filtered = categoryFilter ? products.filter((p) => p.category === categoryFilter) : products;
+  const allProducts = await getProductsWithOverrides();
+  const filtered = categoryFilter ? allProducts.filter((p) => p.category === categoryFilter) : allProducts;
   const displayLabel = cat ? (categoryLabels[cat] ?? categoryFilter) : "Todos os Produtos";
 
   return (
