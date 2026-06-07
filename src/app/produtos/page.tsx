@@ -2,13 +2,20 @@ import type { Metadata } from "next";
 import { products } from "@/lib/products";
 import ProductCard from "@/components/ProductCard";
 
-export const metadata: Metadata = { title: "Produtos", description: "Explore nossa linha completa de gadgets, ferramentas e utilidades." };
+export const metadata: Metadata = { title: "Produtos", description: "Explore nossa curadoria de gadgets, ferramentas e utilidades práticas." };
 
 const categoryMap: Record<string, string> = {
   gadgets: "Gadgets & Eletrônicos",
-  automacao: "Automação Residencial",
+  casa: "Automação Residencial",
   camping: "Camping & Aventura",
   ferramentas: "Ferramentas & Utilidades",
+};
+
+const categoryLabels: Record<string, string> = {
+  gadgets: "Gadgets & Tecnologia",
+  casa: "Casa & Garagem",
+  camping: "Camping & Aventura",
+  ferramentas: "Ferramentas & Reparos",
 };
 
 export default function ProdutosPage({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
@@ -19,16 +26,17 @@ async function ProdutosContent({ searchParams }: { searchParams: Promise<{ cat?:
   const { cat } = await searchParams;
   const categoryFilter = cat ? categoryMap[cat] : null;
   const filtered = categoryFilter ? products.filter((p) => p.category === categoryFilter) : products;
+  const displayLabel = cat ? (categoryLabels[cat] ?? categoryFilter) : "Todos os Produtos";
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-white mb-2">{categoryFilter ?? "Todos os Produtos"}</h1>
-        <p className="text-slate-400">{filtered.length} produto{filtered.length !== 1 ? "s" : ""} {categoryFilter ? `em ${categoryFilter}` : "disponíveis"}</p>
+        <h1 className="text-3xl font-black text-white mb-2">{displayLabel}</h1>
+        <p className="text-slate-400">{filtered.length} produto{filtered.length !== 1 ? "s" : ""} disponíveis</p>
       </div>
       <div className="flex flex-wrap gap-2 mb-8">
         <a href="/produtos" className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!cat ? "bg-amber-500 text-slate-900" : "bg-slate-800 text-slate-400 hover:text-white border border-slate-700"}`}>Todos</a>
-        {Object.entries(categoryMap).map(([slug, label]) => (
+        {Object.entries(categoryLabels).map(([slug, label]) => (
           <a key={slug} href={`/produtos?cat=${slug}`} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${cat === slug ? "bg-amber-500 text-slate-900" : "bg-slate-800 text-slate-400 hover:text-white border border-slate-700"}`}>{label}</a>
         ))}
       </div>
