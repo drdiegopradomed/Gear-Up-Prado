@@ -5,10 +5,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: { default: "Gear Up Prado — Gadgets, Ferramentas e Utilidades", template: "%s | Gear Up Prado" },
+  title: { default: "KitCerto — Gadgets, Ferramentas e Utilidades", template: "%s | KitCerto" },
   description: "Equipamentos úteis para casa, carro, rotina e aventura. Gadgets, ferramentas e utilidades para simplificar o dia a dia.",
-  keywords: ["gadgets", "ferramentas", "smartwatch", "lanterna tática", "fechadura digital", "câmera wifi", "camping"],
-  openGraph: { title: "Gear Up Prado", description: "Equipamentos para homens que gostam de estar preparados.", locale: "pt_BR", type: "website" },
+  keywords: ["gadgets", "ferramentas", "smartwatch", "lanterna tática", "fechadura digital", "câmera wifi", "camping", "kit certo", "utilidades"],
+  openGraph: { title: "KitCerto", description: "Equipamentos para homens que gostam de estar preparados.", locale: "pt_BR", type: "website" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
