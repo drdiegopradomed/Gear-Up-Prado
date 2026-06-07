@@ -17,4 +17,5 @@ export type ProductOverride = {
   badge?: string | null;
   in_stock?: boolean | null;
   delivery_days?: string | null;
+  hidden?: boolean | null;
 };

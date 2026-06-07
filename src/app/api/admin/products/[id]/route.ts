@@ -23,6 +23,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     badge: body.badge,
     in_stock: body.inStock,
     delivery_days: body.deliveryDays,
+    hidden: body.hidden ?? false,
     updated_at: new Date().toISOString(),
   };
 
@@ -57,6 +58,59 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 
   return NextResponse.json({ ok: true });
+}
+
+// PATCH — toggle hidden only (quick delete/restore)
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const body = await req.json();
+  const adminPwd = process.env.ADMIN_PASSWORD ?? "kitcerto2026";
+  if (body.adminToken !== adminPwd) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const hidden = body.hidden === true;
+
+  // Upsert: update if exists, insert if not
+  const upsertRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
+    {
+      method: "PATCH",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ hidden, updated_at: new Date().toISOString() }),
+    }
+  );
+
+  if (upsertRes.ok) {
+    // Check if any row was affected (PostgREST returns empty on PATCH with no match)
+    const count = upsertRes.headers.get("content-range");
+    if (count === null || count === "*/0") {
+      // No existing row — insert minimal row with just hidden flag
+      const insRes = await fetch(`${SUPABASE_URL}/rest/v1/product_overrides`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ product_id: id, hidden, updated_at: new Date().toISOString() }),
+      });
+      if (!insRes.ok) {
+        const text = await insRes.text();
+        return NextResponse.json({ error: `INSERT failed: ${text}` }, { status: 500 });
+      }
+    }
+    return NextResponse.json({ ok: true });
+  }
+
+  const text = await upsertRes.text();
+  return NextResponse.json({ error: text }, { status: 500 });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {

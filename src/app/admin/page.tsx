@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { products, Product, formatPrice } from "@/lib/products";
 import { ProductOverride } from "@/lib/supabase";
-import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check, Trash2, Plus } from "lucide-react";
+import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check, Trash2, Plus, EyeOff, Eye } from "lucide-react";
 
 function AdminLogin({ onLogin }: { onLogin: (token: string) => void }) {
   const [pwd, setPwd] = useState("");
@@ -123,6 +123,7 @@ function EditModal({
         badge: badge || null,
         deliveryDays,
         inStock: true,
+        hidden: false,
       }),
     });
     setSaving(false);
@@ -291,6 +292,7 @@ export default function AdminPage() {
   const [overrides, setOverrides] = useState<Map<string, ProductOverride>>(new Map());
   const [editing, setEditing] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showHidden, setShowHidden] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("admin_token");
@@ -328,8 +330,22 @@ export default function AdminPage() {
     };
   }
 
+  async function toggleHidden(productId: string, hide: boolean) {
+    if (hide && !confirm("Ocultar este produto do site?")) return;
+    await fetch(`/api/admin/products/${productId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ adminToken: token, hidden: hide }),
+    });
+    await loadOverrides();
+  }
+
   if (loading) return <div className="min-h-screen bg-slate-900" />;
   if (!token) return <AdminLogin onLogin={setToken} />;
+
+  const hiddenCount = products.filter((p) => overrides.get(p.id)?.hidden).length;
+  const visibleProducts = products.filter((p) => !overrides.get(p.id)?.hidden);
+  const hiddenProducts = products.filter((p) => overrides.get(p.id)?.hidden);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -359,11 +375,22 @@ export default function AdminPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-black text-white mb-2">Produtos</h1>
-        <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição.</p>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-black text-white">Produtos</h1>
+          {hiddenCount > 0 && (
+            <button
+              onClick={() => setShowHidden((v) => !v)}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm border border-slate-700 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              {showHidden ? <Eye size={14} /> : <EyeOff size={14} />}
+              {showHidden ? "Ocultar deletados" : `Ver deletados (${hiddenCount})`}
+            </button>
+          )}
+        </div>
+        <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição. Use <strong className="text-red-400">Deletar</strong> para ocultar do site.</p>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {products.map((p) => {
+          {visibleProducts.map((p) => {
             const prod = getProduct(p);
             const hasOverride = overrides.has(p.id);
             return (
@@ -379,17 +406,57 @@ export default function AdminPage() {
                   <p className="text-xs text-slate-500 mb-0.5">{prod.category}</p>
                   <p className="text-sm font-semibold text-white leading-tight mb-1 line-clamp-2">{prod.name}</p>
                   <p className="text-amber-400 font-bold text-sm mb-3">{formatPrice(prod.price)}</p>
-                  <button
-                    onClick={() => setEditing(getProduct(p))}
-                    className="w-full flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-amber-500 hover:text-slate-900 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors"
-                  >
-                    <Edit2 size={13} /> Editar
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditing(getProduct(p))}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-amber-500 hover:text-slate-900 text-slate-300 text-sm font-semibold py-2 rounded-lg transition-colors"
+                    >
+                      <Edit2 size={13} /> Editar
+                    </button>
+                    <button
+                      onClick={() => toggleHidden(p.id, true)}
+                      title="Deletar (ocultar do site)"
+                      className="flex items-center justify-center p-2 bg-slate-700 hover:bg-red-500/20 hover:text-red-400 text-slate-500 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
+
+        {showHidden && hiddenProducts.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-lg font-bold text-slate-500 mb-4 flex items-center gap-2"><EyeOff size={16} /> Produtos deletados</h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {hiddenProducts.map((p) => {
+                const prod = getProduct(p);
+                return (
+                  <div key={p.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden opacity-60">
+                    <div className="relative h-40 bg-slate-700">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover grayscale" />
+                      <span className="absolute top-2 left-2 bg-red-500/80 text-white text-xs font-bold px-2 py-0.5 rounded-full">Deletado</span>
+                    </div>
+                    <div className="p-3">
+                      <p className="text-xs text-slate-600 mb-0.5">{prod.category}</p>
+                      <p className="text-sm font-semibold text-slate-400 leading-tight mb-1 line-clamp-2">{prod.name}</p>
+                      <p className="text-slate-500 font-bold text-sm mb-3">{formatPrice(prod.price)}</p>
+                      <button
+                        onClick={() => toggleHidden(p.id, false)}
+                        className="w-full flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-green-500/20 hover:text-green-400 text-slate-400 text-sm font-semibold py-2 rounded-lg transition-colors"
+                      >
+                        <Eye size={13} /> Restaurar
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
