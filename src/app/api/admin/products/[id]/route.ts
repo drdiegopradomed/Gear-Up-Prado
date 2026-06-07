@@ -71,46 +71,57 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const hidden = body.hidden === true;
 
-  // Upsert: update if exists, insert if not
-  const upsertRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
+  // Check if row exists
+  const getRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}&select=product_id`,
     {
-      method: "PATCH",
       headers: {
         apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: "return=minimal",
       },
-      body: JSON.stringify({ hidden, updated_at: new Date().toISOString() }),
     }
   );
+  const existing = getRes.ok ? await getRes.json() : [];
+  const rowExists = Array.isArray(existing) && existing.length > 0;
 
-  if (upsertRes.ok) {
-    // Check if any row was affected (PostgREST returns empty on PATCH with no match)
-    const count = upsertRes.headers.get("content-range");
-    if (count === null || count === "*/0") {
-      // No existing row — insert minimal row with just hidden flag
-      const insRes = await fetch(`${SUPABASE_URL}/rest/v1/product_overrides`, {
-        method: "POST",
+  if (rowExists) {
+    // Update existing row
+    const patchRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/product_overrides?product_id=eq.${encodeURIComponent(id)}`,
+      {
+        method: "PATCH",
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           "Content-Type": "application/json",
           Prefer: "return=minimal",
         },
-        body: JSON.stringify({ product_id: id, hidden, updated_at: new Date().toISOString() }),
-      });
-      if (!insRes.ok) {
-        const text = await insRes.text();
-        return NextResponse.json({ error: `INSERT failed: ${text}` }, { status: 500 });
+        body: JSON.stringify({ hidden, updated_at: new Date().toISOString() }),
       }
+    );
+    if (!patchRes.ok) {
+      const text = await patchRes.text();
+      return NextResponse.json({ error: text }, { status: 500 });
     }
-    return NextResponse.json({ ok: true });
+  } else {
+    // Insert minimal row
+    const insRes = await fetch(`${SUPABASE_URL}/rest/v1/product_overrides`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({ product_id: id, hidden, updated_at: new Date().toISOString() }),
+    });
+    if (!insRes.ok) {
+      const text = await insRes.text();
+      return NextResponse.json({ error: `INSERT failed: ${text}` }, { status: 500 });
+    }
   }
 
-  const text = await upsertRes.text();
-  return NextResponse.json({ error: text }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
