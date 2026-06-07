@@ -1,3 +1,10 @@
+export type Review = {
+  author: string;
+  rating: number;
+  comment: string;
+  date: string;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -11,7 +18,19 @@ export type Product = {
   imageUrl: string;
   badge?: string;
   inStock: boolean;
+  rating: number;
+  reviewCount: number;
+  deliveryDays: string;
+  reviews: Review[];
 };
+
+export function formatPrice(price: number) {
+  return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+export function getProductBySlug(slug: string) {
+  return products.find((p) => p.slug === slug);
+}
 
 export const products: Product[] = [
   {
@@ -34,6 +53,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
     badge: "Mais Vendido",
     inStock: true,
+    rating: 4.8,
+    reviewCount: 214,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Rafael M.", rating: 5, comment: "Produto incrível, chegou antes do prazo e funcionou perfeitamente desde o primeiro uso.", date: "12/05/2026" },
+      { author: "Carlos S.", rating: 5, comment: "Tela linda, bateria dura muito. Melhor custo-benefício que já vi.", date: "03/05/2026" },
+      { author: "Thiago L.", rating: 4, comment: "Muito bom, só achei o GPS um pouco lento para conectar.", date: "20/04/2026" },
+    ],
   },
   {
     id: "2",
@@ -55,6 +82,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=600&q=80",
     badge: "Lançamento",
     inStock: true,
+    rating: 4.6,
+    reviewCount: 87,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Marcos A.", rating: 5, comment: "Instalação facilíssima, imagem nítida mesmo à noite. Recomendo!", date: "15/05/2026" },
+      { author: "Paulo R.", rating: 4, comment: "Ótima câmera, app funciona bem. Visão noturna impressiona.", date: "28/04/2026" },
+      { author: "André C.", rating: 5, comment: "Comprei para o escritório e ficou perfeito. Chegou bem embalado.", date: "10/04/2026" },
+    ],
   },
   {
     id: "3",
@@ -75,6 +110,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
     inStock: true,
+    rating: 4.7,
+    reviewCount: 156,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Felipe O.", rating: 5, comment: "Claridade absurda. Usei no camping e iluminou tudo. Vale cada centavo.", date: "02/05/2026" },
+      { author: "Rodrigo N.", rating: 5, comment: "Robusta e leve. O zoom é excelente.", date: "18/04/2026" },
+      { author: "Bruno T.", rating: 4, comment: "Muito boa, só queria que a bateria durasse um pouco mais no modo alto.", date: "05/04/2026" },
+    ],
   },
   {
     id: "4",
@@ -96,6 +139,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1622495966027-e7f40150eb08?w=600&q=80",
     badge: "Essencial",
     inStock: true,
+    rating: 4.9,
+    reviewCount: 98,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Lucas B.", rating: 5, comment: "Levei em uma trilha de 5 dias no Pantanal. Funcionou perfeitamente.", date: "07/05/2026" },
+      { author: "Diego F.", rating: 5, comment: "Produto essencial para quem faz trilha. Leve e confiável.", date: "22/04/2026" },
+      { author: "Henrique V.", rating: 5, comment: "Qualidade surpreendente para o preço. Recomendo a todos os aventureiros.", date: "01/04/2026" },
+    ],
   },
   {
     id: "5",
@@ -116,6 +167,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1609743522653-52354461eb27?w=600&q=80",
     inStock: true,
+    rating: 4.7,
+    reviewCount: 63,
+    deliveryDays: "6–9 dias úteis",
+    reviews: [
+      { author: "Gustavo P.", rating: 5, comment: "Instalei sozinho em 30 minutos. Biometria rápida e precisa.", date: "10/05/2026" },
+      { author: "Alexandre K.", rating: 4, comment: "Ótima fechadura, app funciona bem. Chegou com todos os acessórios.", date: "25/04/2026" },
+      { author: "Ricardo M.", rating: 5, comment: "Segurança total. Já tentaram arrombar e o alarme funcionou.", date: "08/04/2026" },
+    ],
   },
   {
     id: "6",
@@ -137,6 +196,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80",
     badge: "Top Gadget",
     inStock: true,
+    rating: 4.6,
+    reviewCount: 189,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Gabriel S.", rating: 5, comment: "Som incrível, ANC funciona de verdade. Uso no trabalho todo dia.", date: "14/05/2026" },
+      { author: "Matheus R.", rating: 4, comment: "Muito bom para o preço. Bateria dura bastante.", date: "30/04/2026" },
+      { author: "Igor A.", rating: 5, comment: "Comprei e me arrependi de ter esperado tanto. Melhor fone que tive.", date: "12/04/2026" },
+    ],
   },
   {
     id: "7",
@@ -157,6 +224,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&q=80",
     inStock: true,
+    rating: 4.5,
+    reviewCount: 72,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Leandro C.", rating: 5, comment: "Carregou meu notebook e celular em viagem. Indispensável.", date: "08/05/2026" },
+      { author: "Vitor H.", rating: 4, comment: "Muito fino para a capacidade. Funciona muito bem.", date: "19/04/2026" },
+      { author: "Caio M.", rating: 5, comment: "Excelente produto. Entrega rápida e bem embalado.", date: "02/04/2026" },
+    ],
   },
   {
     id: "8",
@@ -178,6 +253,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80",
     badge: "Fitness",
     inStock: true,
+    rating: 4.8,
+    reviewCount: 134,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Eduardo N.", rating: 5, comment: "Meu personal indicou e não me arrependi. Recuperação muito mais rápida.", date: "11/05/2026" },
+      { author: "Fábio S.", rating: 5, comment: "Silencioso e potente. As 6 cabeças atendem todos os grupos musculares.", date: "27/04/2026" },
+      { author: "Samuel T.", rating: 4, comment: "Muito bom, só achei que poderia vir com case mais robusto.", date: "09/04/2026" },
+    ],
   },
   {
     id: "9",
@@ -198,6 +281,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80",
     inStock: true,
+    rating: 4.4,
+    reviewCount: 58,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Renato B.", rating: 5, comment: "Encaixa o celular automaticamente. Praticidade total no trânsito.", date: "06/05/2026" },
+      { author: "Vinícius L.", rating: 4, comment: "Muito bom, carrega rápido. Fixação no painel é firme.", date: "21/04/2026" },
+      { author: "Otávio F.", rating: 4, comment: "Produto de qualidade. Chegou bem antes do prazo.", date: "03/04/2026" },
+    ],
   },
   {
     id: "10",
@@ -218,6 +309,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80",
     inStock: true,
+    rating: 4.6,
+    reviewCount: 91,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Danilo C.", rating: 5, comment: "Salvou minha vida em uma viagem com pneu murcho. Essencial no carro.", date: "09/05/2026" },
+      { author: "Murilo A.", rating: 4, comment: "Compacto e eficiente. O desligamento automático é muito útil.", date: "24/04/2026" },
+      { author: "Sérgio V.", rating: 5, comment: "Melhor compra do mês. Qualidade muito acima do esperado.", date: "07/04/2026" },
+    ],
   },
   {
     id: "11",
@@ -239,6 +338,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=600&q=80",
     badge: "Mais Vendido",
     inStock: true,
+    rating: 4.8,
+    reviewCount: 203,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Cláudio M.", rating: 5, comment: "Melhor presente que ganhei. Uso todo dia, qualidade excepcional.", date: "13/05/2026" },
+      { author: "Júlio R.", rating: 5, comment: "Acabamento perfeito. Travas de segurança funcionam muito bem.", date: "29/04/2026" },
+      { author: "Nelson S.", rating: 4, comment: "Produto robusto e versátil. Estojo de couro é um bônus.", date: "11/04/2026" },
+    ],
   },
   {
     id: "12",
@@ -259,6 +366,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=600&q=80",
     inStock: true,
+    rating: 4.7,
+    reviewCount: 118,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Tiago F.", rating: 5, comment: "Consertei meu iPhone com esse kit. Tem tudo que precisa.", date: "05/05/2026" },
+      { author: "Alan P.", rating: 5, comment: "Qualidade dos bits é muito boa. Estojo organizado e prático.", date: "17/04/2026" },
+      { author: "Roberto L.", rating: 4, comment: "Ótimo kit. Só o cabo poderia ser um pouco mais longo.", date: "01/04/2026" },
+    ],
   },
   {
     id: "13",
@@ -279,6 +394,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=600&q=80",
     inStock: true,
+    rating: 4.5,
+    reviewCount: 44,
+    deliveryDays: "5–8 dias úteis",
+    reviews: [
+      { author: "Walter C.", rating: 5, comment: "Precisão impressionante. Reformei meu apartamento com ele.", date: "04/05/2026" },
+      { author: "César A.", rating: 4, comment: "Funciona muito bem. O tripé magnético é um diferencial.", date: "16/04/2026" },
+      { author: "Flávio R.", rating: 5, comment: "Comprei para instalar porcelanato. Linha certinha o tempo todo.", date: "28/03/2026" },
+    ],
   },
   {
     id: "14",
@@ -299,6 +422,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1601972599720-36938d4ecd31?w=600&q=80",
     inStock: true,
+    rating: 4.6,
+    reviewCount: 67,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Emerson D.", rating: 5, comment: "Preciso e fácil de usar. Ótimo para uso doméstico e profissional.", date: "07/05/2026" },
+      { author: "Adilson P.", rating: 4, comment: "Muito bom. O termopar incluso é um bônus excelente.", date: "20/04/2026" },
+      { author: "Rubens H.", rating: 5, comment: "Qualidade de profissional a preço acessível.", date: "04/04/2026" },
+    ],
   },
   {
     id: "15",
@@ -320,6 +451,14 @@ export const products: Product[] = [
     imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&q=80",
     badge: "Essencial",
     inStock: true,
+    rating: 4.9,
+    reviewCount: 312,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Jonathan K.", rating: 5, comment: "Café quente por mais de 12h testado. Produto incrível.", date: "15/05/2026" },
+      { author: "Cristian O.", rating: 5, comment: "Qualidade excelente. Já caiu e não amassou.", date: "01/05/2026" },
+      { author: "Welton A.", rating: 5, comment: "Indispensável para o trabalho. Minha água fica gelada o dia todo.", date: "14/04/2026" },
+    ],
   },
   {
     id: "16",
@@ -338,8 +477,16 @@ export const products: Product[] = [
       "Clip de bolso incluso",
       "Estojo tático incluso",
     ],
-    imageUrl: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&q=80",
     inStock: true,
+    rating: 4.5,
+    reviewCount: 89,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Marcelo B.", rating: 5, comment: "Compacto e robusto. Uso em todas as trilhas.", date: "10/05/2026" },
+      { author: "Patrick S.", rating: 4, comment: "Bom acabamento. A lâmina vem bem afiada.", date: "23/04/2026" },
+      { author: "Evandro M.", rating: 5, comment: "Presente perfeito para quem gosta de aventura.", date: "06/04/2026" },
+    ],
   },
   {
     id: "17",
@@ -360,6 +507,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&q=80",
     inStock: true,
+    rating: 4.7,
+    reviewCount: 145,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Alexsandro R.", rating: 5, comment: "Leve e potente. Usei em espeleologia e foi perfeita.", date: "12/05/2026" },
+      { author: "Silvio N.", rating: 5, comment: "Luz vermelha é ótima para não perder a visão noturna.", date: "26/04/2026" },
+      { author: "Adão C.", rating: 4, comment: "Muito boa. A regulagem do ângulo é precisa.", date: "09/04/2026" },
+    ],
   },
   {
     id: "18",
@@ -380,6 +535,14 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
     inStock: true,
+    rating: 4.4,
+    reviewCount: 56,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Ronan P.", rating: 5, comment: "Salvou minha mochila numa chuva forte na trilha. Vale muito.", date: "08/05/2026" },
+      { author: "Adriano T.", rating: 4, comment: "Fácil de guardar e coloca rápido quando precisa.", date: "22/04/2026" },
+      { author: "Elton V.", rating: 4, comment: "Boa qualidade, material resistente.", date: "05/04/2026" },
+    ],
   },
   {
     id: "19",
@@ -398,9 +561,17 @@ export const products: Product[] = [
       "Vida útil de 25.000 horas",
       "Cenas e horários programáveis",
     ],
-    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1565814636199-ae8133055c1c?w=600&q=80",
     badge: "Smart Home",
     inStock: true,
+    rating: 4.5,
+    reviewCount: 178,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Davi L.", rating: 5, comment: "Configurou em 2 minutos com a Alexa. Cores incríveis.", date: "14/05/2026" },
+      { author: "Natan S.", rating: 4, comment: "App funciona bem. Cenas de cinema e festa são demais.", date: "28/04/2026" },
+      { author: "Kevin O.", rating: 5, comment: "Transformou o quarto. Preço ótimo para essa qualidade.", date: "10/04/2026" },
+    ],
   },
   {
     id: "20",
@@ -421,5 +592,13 @@ export const products: Product[] = [
     ],
     imageUrl: "https://images.unsplash.com/photo-1586473219010-2ffc57b0d282?w=600&q=80",
     inStock: true,
+    rating: 4.6,
+    reviewCount: 93,
+    deliveryDays: "4–7 dias úteis",
+    reviews: [
+      { author: "Luan C.", rating: 5, comment: "Monitoramento de consumo é muito útil. Descobri que meu ar-condicionado gasta muito.", date: "11/05/2026" },
+      { author: "Yuri M.", rating: 4, comment: "Fácil de instalar e configurar. App é intuitivo.", date: "25/04/2026" },
+      { author: "Enzo F.", rating: 5, comment: "Comprei 4 unidades. Funcionam perfeitamente com a Alexa.", date: "08/04/2026" },
+    ],
   },
 ];
