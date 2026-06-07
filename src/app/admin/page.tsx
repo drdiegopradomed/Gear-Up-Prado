@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { products, Product, formatPrice } from "@/lib/products";
-import { supabase, ProductOverride } from "@/lib/supabase";
+import { ProductOverride } from "@/lib/supabase";
 import { X, Upload, Save, RotateCcw, LogOut, Edit2, Check, Trash2, Plus } from "lucide-react";
 
 function AdminLogin({ onLogin }: { onLogin: (token: string) => void }) {
@@ -131,7 +131,7 @@ function EditModal({
       setTimeout(() => { onSaved(); onClose(); }, 800);
     } else {
       const data = await res.json().catch(() => ({}));
-      alert("Erro ao salvar: " + (data.error ?? res.status) + (data.details ? "\n" + JSON.stringify(data.details) : ""));
+      alert("Erro ao salvar: " + (data.error ?? res.status));
     }
   }
 
@@ -151,7 +151,6 @@ function EditModal({
         </div>
 
         <div className="p-5 space-y-5">
-          {/* Foto principal */}
           <div>
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Foto principal</label>
             <div
@@ -173,13 +172,8 @@ function EditModal({
                 </span>
               </div>
             </div>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "main")}
-            />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden"
+              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "main")} />
             <input
               type="url"
               placeholder="Ou cole uma URL de imagem"
@@ -189,7 +183,6 @@ function EditModal({
             />
           </div>
 
-          {/* Fotos adicionais */}
           <div>
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-2 block">Fotos adicionais</label>
             <div className="grid grid-cols-3 gap-2 mb-2">
@@ -214,25 +207,17 @@ function EditModal({
                 <span className="text-xs">{uploading ? uploadProgress : "Adicionar"}</span>
               </button>
             </div>
-            <input
-              ref={extraFileRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "extra")}
-            />
+            <input ref={extraFileRef} type="file" accept="image/*" multiple className="hidden"
+              onChange={(e) => e.target.files?.length && uploadFiles(e.target.files, "extra")} />
             <p className="text-xs text-slate-500">Selecione várias fotos de uma vez na fototeca</p>
           </div>
 
-          {/* Name */}
           <div>
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-1 block">Nome</label>
             <input value={name} onChange={(e) => setName(e.target.value)}
               className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" />
           </div>
 
-          {/* Prices */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-slate-400 uppercase tracking-wide mb-1 block">Preço (R$)</label>
@@ -246,7 +231,6 @@ function EditModal({
             </div>
           </div>
 
-          {/* Badge & Delivery */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-slate-400 uppercase tracking-wide mb-1 block">Badge (ex: Novo)</label>
@@ -260,14 +244,12 @@ function EditModal({
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-1 block">Descrição</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3}
               className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500 resize-none" />
           </div>
 
-          {/* Features */}
           <div>
             <label className="text-xs text-slate-400 uppercase tracking-wide mb-1 block">Especificações (uma por linha)</label>
             <textarea value={featuresText} onChange={(e) => setFeaturesText(e.target.value)} rows={6}
@@ -310,7 +292,8 @@ export default function AdminPage() {
   }, [token]);
 
   async function loadOverrides() {
-    const { data } = await supabase.from("product_overrides").select("*");
+    const res = await fetch("/api/admin/overrides");
+    const { data } = await res.json();
     const map = new Map<string, ProductOverride>();
     (data ?? []).forEach((o: ProductOverride) => map.set(o.product_id, o));
     setOverrides(map);
