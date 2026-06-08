@@ -137,7 +137,6 @@ function EditModal({
   }
 
   async function resetOverride() {
-    if (!confirm("Remover todas as edições e voltar ao padrão?")) return;
     await fetch(`/api/admin/products/${product.id}?token=${adminToken}`, { method: "DELETE" });
     onSaved();
     onClose();
@@ -293,6 +292,8 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [showHidden, setShowHidden] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     const stored = localStorage.getItem("admin_token");
@@ -331,12 +332,19 @@ export default function AdminPage() {
   }
 
   async function toggleHidden(productId: string, hide: boolean) {
-    if (hide && !confirm("Ocultar este produto do site?")) return;
-    await fetch(`/api/admin/products/${productId}`, {
+    setDeletingId(productId);
+    setDeleteError("");
+    const res = await fetch(`/api/admin/products/${productId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ adminToken: token, hidden: hide }),
     });
+    setDeletingId(null);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setDeleteError(data.error ?? `Erro ${res.status}`);
+      return;
+    }
     await loadOverrides();
   }
 
@@ -387,12 +395,18 @@ export default function AdminPage() {
             </button>
           )}
         </div>
-        <p className="text-slate-400 text-sm mb-8">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição. Use <strong className="text-red-400">Deletar</strong> para ocultar do site.</p>
+        <p className="text-slate-400 text-sm mb-2">Clique em <strong className="text-amber-400">Editar</strong> para alterar fotos, nome, preço ou descrição. Use <strong className="text-red-400">Deletar</strong> para ocultar do site.</p>
+        {deleteError && (
+          <p className="text-red-400 text-sm mb-4 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+            Erro ao deletar: {deleteError}
+          </p>
+        )}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">
           {visibleProducts.map((p) => {
             const prod = getProduct(p);
             const hasOverride = overrides.has(p.id);
+            const isDeleting = deletingId === p.id;
             return (
               <div key={p.id} className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
                 <div className="relative h-40 bg-slate-700">
@@ -415,10 +429,11 @@ export default function AdminPage() {
                     </button>
                     <button
                       onClick={() => toggleHidden(p.id, true)}
+                      disabled={isDeleting}
                       title="Deletar (ocultar do site)"
-                      className="flex items-center justify-center p-2 bg-slate-700 hover:bg-red-500/20 hover:text-red-400 text-slate-500 rounded-lg transition-colors"
+                      className="flex items-center justify-center p-2 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      <Trash2 size={14} />
+                      {isDeleting ? <span className="text-xs">...</span> : <Trash2 size={14} />}
                     </button>
                   </div>
                 </div>
@@ -433,6 +448,7 @@ export default function AdminPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {hiddenProducts.map((p) => {
                 const prod = getProduct(p);
+                const isRestoring = deletingId === p.id;
                 return (
                   <div key={p.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl overflow-hidden opacity-60">
                     <div className="relative h-40 bg-slate-700">
@@ -446,9 +462,10 @@ export default function AdminPage() {
                       <p className="text-slate-500 font-bold text-sm mb-3">{formatPrice(prod.price)}</p>
                       <button
                         onClick={() => toggleHidden(p.id, false)}
-                        className="w-full flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-green-500/20 hover:text-green-400 text-slate-400 text-sm font-semibold py-2 rounded-lg transition-colors"
+                        disabled={isRestoring}
+                        className="w-full flex items-center justify-center gap-1.5 bg-slate-700 hover:bg-green-500/20 hover:text-green-400 text-slate-400 text-sm font-semibold py-2 rounded-lg transition-colors disabled:opacity-50"
                       >
-                        <Eye size={13} /> Restaurar
+                        <Eye size={13} /> {isRestoring ? "Restaurando..." : "Restaurar"}
                       </button>
                     </div>
                   </div>
